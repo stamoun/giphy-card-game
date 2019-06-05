@@ -1,0 +1,31 @@
+.card {
+  background: none;
+  cursor: pointer;
+  display: flex;
+  border: 1px solid black;
+  width: 200px;
+  height: 200px;
+  border-radius: 6px;
+  align-items: center;
+  justify-content: center;
+
+  &.revealed {
+    background-color: bisque;
+  }
+
+  &.matched {
+    background-color: pink;
+  }
+
+  &.hidden {
+    background-color: darksalmon;
+
+    &:hover {
+      opacity: 0.8;
+    }
+  }
+
+  > img {
+    width: 100%;
+  }
+}
