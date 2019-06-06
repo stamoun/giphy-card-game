@@ -1,14 +1,20 @@
 import React from "react";
 import { getImage } from "../logic/giphy-api";
 import { shuffle } from "../logic/shuffler";
-import { GameCard } from "../models/game-card";
+import { GameCard, CardState } from "../models/game-card";
 import { Card } from "./Card";
 import { delay } from "../logic/delay";
 import styled from "styled-components";
 
 interface GameState {
   loading: boolean;
+  blocked: boolean;
   cards: GameCard[];
+}
+
+export interface GameProps {
+  search: string;
+  limit: number;
 }
 
 const Panel = styled.div`
@@ -19,19 +25,13 @@ const Panel = styled.div`
   justify-content: center;
 `;
 
-export class Game extends React.Component<
-  { search: string; limit: number },
-  GameState
-> {
-  search: any;
-  limit: any;
+export class Game extends React.Component<GameProps, GameState> {
   constructor(props: any) {
     super(props);
-    this.search = props.search;
-    this.limit = props.limit;
     this.state = {
       loading: false,
-      cards: []
+      cards: [],
+      blocked: false
     };
   }
 
@@ -40,7 +40,7 @@ export class Game extends React.Component<
       loading: true
     });
 
-    getImage(this.props.search, this.limit)
+    getImage(this.props.search, this.props.limit)
       .then(response => delay(1000, response))
       .then(response => {
         const results = response.data.map(gd => {
@@ -77,13 +77,21 @@ export class Game extends React.Component<
   }
 
   handleCardClicked(cardId: number) {
+    if (this.state.blocked) {
+      return;
+    }
+
     const previousCard = this.state.cards.find(c => {
       return c.state === "revealed";
     });
 
     const card = this.state.cards[cardId];
+
     if (!previousCard) {
-      this.setCardState("revealed", cardId);
+      this.setState(state => ({
+        cards: getUpdatedCards(state.cards, "revealed", cardId)
+      }));
+
       return;
     }
 
@@ -92,25 +100,46 @@ export class Game extends React.Component<
     }
 
     if (previousCard.pairId === card.pairId) {
-      this.setCardState("matched", cardId, previousCard.cardId);
+      this.setState(state => ({
+        cards: getUpdatedCards(
+          state.cards,
+          "matched",
+          cardId,
+          previousCard.cardId
+        )
+      }));
     } else {
-      this.setCardState("hidden", cardId, previousCard.cardId);
+      this.setState(state => ({
+        blocked: true,
+        cards: getUpdatedCards(state.cards, "revealed", cardId)
+      }));
+      setTimeout(() => {
+        this.setState(state => ({
+          cards: getUpdatedCards(
+            state.cards,
+            "hidden",
+            cardId,
+            previousCard.cardId
+          ),
+          blocked: false
+        }));
+      }, 1000);
     }
   }
 
-  setCardState(cardState: GameCard["state"], ...cardsToUpdate: number[]) {
-    this.setState(state => ({
-      cards: state.cards.map(c => {
-        if (!cardsToUpdate.includes(c.cardId)) {
-          return c;
-        }
-        return {
-          ...c,
-          state: cardState
-        };
-      })
-    }));
-  }
+  // setCardState(cardState: GameCard["state"], ...cardsToUpdate: number[]) {
+  //   this.setState(state => ({
+  //     cards: state.cards.map(c => {
+  //       if (!cardsToUpdate.includes(c.cardId)) {
+  //         return c;
+  //       }
+  //       return {
+  //         ...c,
+  //         state: cardState
+  //       };
+  //     })
+  //   }));
+  // }
 
   render() {
     const { cards: results, loading } = this.state;
@@ -149,4 +178,20 @@ export class Game extends React.Component<
   renderEmpty(): JSX.Element {
     return <div>No results</div>;
   }
+}
+
+function getUpdatedCards(
+  cards: GameCard[],
+  nextState: CardState,
+  ...cardsToUpdate: number[]
+) {
+  return cards.map(c => {
+    if (!cardsToUpdate.includes(c.cardId)) {
+      return c;
+    }
+    return {
+      ...c,
+      state: nextState
+    };
+  });
 }
