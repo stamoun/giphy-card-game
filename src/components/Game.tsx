@@ -4,16 +4,24 @@ import { shuffle } from "../logic/shuffler";
 import { GameCard } from "../models/game-card";
 import { Card } from "./Card";
 import { delay } from "../logic/delay";
-import gamePanelStyles from "./GamePanel.module.scss";
+import styled from "styled-components";
 
-interface GamePanelState {
+interface GameState {
   loading: boolean;
   cards: GameCard[];
 }
 
-export class GamePanel extends React.Component<
+const Panel = styled.div`
+  display: grid;
+  grid-template-columns: repeat(auto-fit, 200px);
+  grid-gap: 6px;
+  margin: 6px;
+  justify-content: center;
+`;
+
+export class Game extends React.Component<
   { search: string; limit: number },
-  GamePanelState
+  GameState
 > {
   search: any;
   limit: any;
@@ -108,9 +116,7 @@ export class GamePanel extends React.Component<
     const { cards: results, loading } = this.state;
 
     return (
-      <div className="game-panel">
-        {loading ? this.renderLoading() : this.renderLoaded(results)}
-      </div>
+      <div>{loading ? this.renderLoading() : this.renderLoaded(results)}</div>
     );
   }
 
@@ -127,7 +133,7 @@ export class GamePanel extends React.Component<
   renderFilled(results: GameCard[]): JSX.Element {
     return (
       <>
-        <div className={gamePanelStyles.cardContainer}>
+        <Panel>
           {results.map(card => (
             <Card
               key={card.cardId}
@@ -135,7 +141,7 @@ export class GamePanel extends React.Component<
               onClick={() => this.handleCardClicked(card.cardId)}
             />
           ))}
-        </div>
+        </Panel>
       </>
     );
   }

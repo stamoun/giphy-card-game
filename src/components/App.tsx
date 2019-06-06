@@ -1,10 +1,10 @@
 import React from "react";
-import { GamePanel } from "./GamePanel";
+import { Game } from "./Game";
 
 const App: React.FC = props => {
   return (
     <div className="App">
-      <GamePanel search="Nicolas Cage" limit={10} />
+      <Game search="Nicolas Cage" limit={10} />
     </div>
   );
 };
