@@ -22,6 +22,11 @@ const CardUI = styled.button<CardUIButton>`
   align-items: center;
   justify-content: center;
 
+  &:focus {
+    outline: none;
+    border: 2px solid black;
+  }
+
   ${props =>
     props.cardState === "revealed"
       ? `background-color: bisque;`

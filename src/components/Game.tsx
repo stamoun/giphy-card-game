@@ -127,20 +127,6 @@ export class Game extends React.Component<GameProps, GameState> {
     }
   }
 
-  // setCardState(cardState: GameCard["state"], ...cardsToUpdate: number[]) {
-  //   this.setState(state => ({
-  //     cards: state.cards.map(c => {
-  //       if (!cardsToUpdate.includes(c.cardId)) {
-  //         return c;
-  //       }
-  //       return {
-  //         ...c,
-  //         state: cardState
-  //       };
-  //     })
-  //   }));
-  // }
-
   render() {
     const { cards: results, loading } = this.state;
 
