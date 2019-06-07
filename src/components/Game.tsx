@@ -12,14 +12,18 @@ interface GameState {
   cards: GameCard[];
 }
 
-export interface GameProps {
-  search: string;
-  limit: number;
+interface GameDiv {
+  columnCount: number;
 }
 
-const Panel = styled.div`
+export interface GameProps {
+  search: string;
+  cardCount: number;
+}
+
+const GamePanel = styled.div<GameDiv>`
   display: grid;
-  grid-template-columns: repeat(auto-fit, 200px);
+  grid-template-columns: repeat(${props => props.columnCount}, 200px);
   grid-gap: 6px;
   margin: 6px;
   justify-content: center;
@@ -35,12 +39,24 @@ export class Game extends React.Component<GameProps, GameState> {
     };
   }
 
+  componentDidUpdate(prevProps: GameProps) {
+    if (
+      prevProps.cardCount !== this.props.cardCount ||
+      prevProps.search !== this.props.search
+    ) {
+      this.prepareGame();
+    }
+  }
+
   componentDidMount() {
+    this.prepareGame();
+  }
+
+  private prepareGame() {
     this.setState({
       loading: true
     });
-
-    getImage(this.props.search, this.props.limit)
+    getImage(this.props.search, this.props.cardCount / 2)
       .then(response => delay(1000, response))
       .then(response => {
         const results = response.data.map(gd => {
@@ -50,24 +66,20 @@ export class Game extends React.Component<GameProps, GameState> {
           };
         });
 
-        let indices = Array.from({ length: results.length * 2 }, (_, k) =>
+        let indices = Array.from({ length: this.props.cardCount }, (_, k) =>
           Math.floor(k / 2)
         );
         indices = shuffle(indices);
-
         const cards = indices.map((pairIndex, cardIndex) => {
           const result = results[pairIndex];
-
           const gameCard: GameCard = {
             cardId: cardIndex,
             pairId: result.pairId,
             state: "hidden",
             image: result.image
           };
-
           return gameCard;
         });
-
         this.setState(state => ({
           ...state,
           loading: false,
@@ -148,7 +160,7 @@ export class Game extends React.Component<GameProps, GameState> {
   renderFilled(results: GameCard[]): JSX.Element {
     return (
       <>
-        <Panel>
+        <GamePanel columnCount={computeGrid(this.props.cardCount).columns}>
           {results.map(card => (
             <Card
               key={card.cardId}
@@ -156,7 +168,7 @@ export class Game extends React.Component<GameProps, GameState> {
               onClick={() => this.handleCardClicked(card.cardId)}
             />
           ))}
-        </Panel>
+        </GamePanel>
       </>
     );
   }
@@ -180,4 +192,13 @@ function getUpdatedCards(
       state: nextState
     };
   });
+}
+
+function computeGrid(cellCount: number) {
+  var columns = Math.floor(Math.sqrt(cellCount));
+  var rows = cellCount / columns;
+  return {
+    columns,
+    rows
+  };
 }
