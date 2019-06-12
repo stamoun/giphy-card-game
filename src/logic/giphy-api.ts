@@ -1,10 +1,10 @@
 import { getEnv } from "./env-api";
 
-export interface GiphyImageResponse {
+interface GiphyImageResponse {
   data: GiphyData[];
 }
 
-export interface GiphyData {
+interface GiphyData {
   type: "gif";
   id: string;
   images: {
@@ -18,7 +18,7 @@ export interface GiphyImage {
   height: string;
 }
 
-export async function getImage(
+export async function getImages(
   search: string,
   limit: number
 ): Promise<GiphyImageResponse> {

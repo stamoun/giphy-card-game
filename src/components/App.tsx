@@ -1,79 +1,56 @@
-import React from "react";
+import React, { useState } from "react";
 import { Game } from "./Game";
-
-interface AppState {
-  draftCardCount: number;
-  cardCount: number;
-  draftSearch: string;
-  search: string;
-}
 
 const GAME_SIZES = [12, 16, 20, 30, 36, 42, 56, 64];
 
-export class App extends React.Component<{}, AppState> {
-  constructor(props: any) {
-    super(props);
+export const App = () => {
+  const [draftCardCount, setDraftCardCount] = useState(16);
+  const [cardCount, setCardCount] = useState(16);
+  const [draftSearch, setDraftSearch] = useState("Nicolas Cage");
+  const [search, setSearch] = useState("Nicolas Cage");
 
-    this.state = {
-      draftCardCount: 16,
-      cardCount: 16,
-      draftSearch: "Nicolas Cage",
-      search: "Nicolas Cage"
-    };
-
-    this.handleSearchChange = this.handleSearchChange.bind(this);
-    this.handleFormSubmit = this.handleFormSubmit.bind(this);
-    this.handleCardCountChange = this.handleCardCountChange.bind(this);
-  }
-
-  render() {
-    return (
-      <div className="App">
-        <form onSubmit={this.handleFormSubmit}>
-          <label>
-            Search:
-            <input
-              type="text"
-              value={this.state.draftSearch}
-              onChange={this.handleSearchChange}
-            />
-          </label>
-          <label>
-            Card count:
-            <select
-              value={this.state.draftCardCount}
-              onChange={this.handleCardCountChange}
-            >
-              {GAME_SIZES.map(s => (
-                <option value={s} key={s}>
-                  {s}
-                </option>
-              ))}
-            </select>
-          </label>
-          <button type="submit">Start</button>
-        </form>
-        <Game search={this.state.search} cardCount={this.state.cardCount} />
-      </div>
-    );
-  }
-
-  handleCardCountChange(e: any) {
-    const next = parseInt(e.target.value, 10);
-    this.setState({ draftCardCount: next });
-  }
-
-  handleSearchChange(e: any) {
-    this.setState({ draftSearch: e.target.value });
-  }
-
-  handleFormSubmit(e: React.FormEvent) {
+  const handleFormSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    this.setState(state => ({
-      cardCount: state.draftCardCount,
-      search: state.draftSearch
-    }));
-  }
-}
+    setCardCount(draftCardCount);
+    setSearch(draftSearch);
+  };
+
+  const handleSearchChange = (e: React.FormEvent<HTMLInputElement>) => {
+    setDraftSearch(e.currentTarget.value);
+  };
+
+  const handleCardCountChange = (e: React.FormEvent<HTMLSelectElement>) => {
+    const next = parseInt(e.currentTarget.value, 10);
+    setDraftCardCount(next);
+  };
+
+  return (
+    <div className="App">
+      <form onSubmit={handleFormSubmit}>
+        <label>
+          Search:
+          <input
+            type="text"
+            value={draftSearch}
+            onChange={handleSearchChange}
+          />
+        </label>
+        <label>
+          Card count:
+          <select value={draftCardCount} onChange={handleCardCountChange}>
+            {GAME_SIZES.map(s => (
+              <option value={s} key={s}>
+                {s}
+              </option>
+            ))}
+          </select>
+        </label>
+        <button type="submit">Start</button>
+      </form>
+
+      <Game search={search} cardCount={cardCount} />
+    </div>
+  );
+};
 
 export default App;

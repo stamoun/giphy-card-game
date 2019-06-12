@@ -1,4 +1,4 @@
-export interface Env {
+interface Env {
   giphy_api_key: string;
 }
 

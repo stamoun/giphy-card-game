@@ -2,7 +2,7 @@ import React from "react";
 import { GameCard } from "../models/game-card";
 import styled from "styled-components";
 
-export interface CardProps {
+interface CardProps {
   gameCard: GameCard;
   onClick: () => void;
 }
@@ -44,8 +44,7 @@ const CardUI = styled.button<CardUIButton>`
   }
 `;
 
-export const Card: React.FC<CardProps> = props => {
-  const { gameCard, onClick } = props;
+export const Card = ({ gameCard, onClick }: CardProps) => {
   const isContentVisible = gameCard.state !== "hidden";
 
   return (

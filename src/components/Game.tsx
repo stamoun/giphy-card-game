@@ -1,22 +1,16 @@
-import React from "react";
-import { getImage } from "../logic/giphy-api";
+import React, { useState, useEffect } from "react";
+import { getImages } from "../logic/giphy-api";
 import { shuffle } from "../logic/shuffler";
 import { GameCard, CardState } from "../models/game-card";
 import { Card } from "./Card";
 import { delay } from "../logic/delay";
 import styled from "styled-components";
 
-interface GameState {
-  loading: boolean;
-  blocked: boolean;
-  cards: GameCard[];
-}
-
 interface GameDiv {
   columnCount: number;
 }
 
-export interface GameProps {
+interface GameProps {
   search: string;
   cardCount: number;
 }
@@ -29,34 +23,15 @@ const GamePanel = styled.div<GameDiv>`
   justify-content: center;
 `;
 
-export class Game extends React.Component<GameProps, GameState> {
-  constructor(props: any) {
-    super(props);
-    this.state = {
-      loading: false,
-      cards: [],
-      blocked: false
-    };
-  }
+export const Game = ({ search, cardCount }: GameProps) => {
+  const [loading, setLoading] = useState(true);
+  const [blocked, setBlocked] = useState(false);
+  const [cards, setCards] = useState<GameCard[]>([]);
 
-  componentDidUpdate(prevProps: GameProps) {
-    if (
-      prevProps.cardCount !== this.props.cardCount ||
-      prevProps.search !== this.props.search
-    ) {
-      this.prepareGame();
-    }
-  }
+  useEffect(() => {
+    setLoading(true);
 
-  componentDidMount() {
-    this.prepareGame();
-  }
-
-  private prepareGame() {
-    this.setState({
-      loading: true
-    });
-    getImage(this.props.search, this.props.cardCount / 2)
+    getImages(search, cardCount / 2)
       .then(response => delay(1000, response))
       .then(response => {
         const results = response.data.map(gd => {
@@ -66,11 +41,12 @@ export class Game extends React.Component<GameProps, GameState> {
           };
         });
 
-        let indices = Array.from({ length: this.props.cardCount }, (_, k) =>
+        let indices = Array.from({ length: cardCount }, (_, k) =>
           Math.floor(k / 2)
         );
         indices = shuffle(indices);
-        const cards = indices.map((pairIndex, cardIndex) => {
+
+        const newCards = indices.map((pairIndex, cardIndex) => {
           const result = results[pairIndex];
           const gameCard: GameCard = {
             cardId: cardIndex,
@@ -80,108 +56,89 @@ export class Game extends React.Component<GameProps, GameState> {
           };
           return gameCard;
         });
-        this.setState(state => ({
-          ...state,
-          loading: false,
-          cards
-        }));
+
+        setLoading(false);
+        setCards(newCards);
       });
-  }
+  }, [search, cardCount]);
 
-  handleCardClicked(cardId: number) {
-    if (this.state.blocked) {
-      return;
-    }
-
-    const previousCard = this.state.cards.find(c => {
-      return c.state === "revealed";
-    });
-
-    const card = this.state.cards[cardId];
-
-    if (!previousCard) {
-      this.setState(state => ({
-        cards: getUpdatedCards(state.cards, "revealed", cardId)
-      }));
-
-      return;
-    }
-
-    if (previousCard.cardId === cardId) {
-      return;
-    }
-
-    if (previousCard.pairId === card.pairId) {
-      this.setState(state => ({
-        cards: getUpdatedCards(
-          state.cards,
-          "matched",
-          cardId,
-          previousCard.cardId
-        )
-      }));
-    } else {
-      this.setState(state => ({
-        blocked: true,
-        cards: getUpdatedCards(state.cards, "revealed", cardId)
-      }));
-      setTimeout(() => {
-        this.setState(state => ({
-          cards: getUpdatedCards(
-            state.cards,
-            "hidden",
-            cardId,
-            previousCard.cardId
-          ),
-          blocked: false
-        }));
-      }, 1000);
-    }
-  }
-
-  render() {
-    const { cards: results, loading } = this.state;
-
-    return (
-      <div>{loading ? this.renderLoading() : this.renderLoaded(results)}</div>
-    );
-  }
-
-  renderLoading() {
+  const renderLoading = () => {
     return <div>Loading...</div>;
-  }
+  };
 
-  renderLoaded(results: GameCard[]): JSX.Element {
-    return results.length === 0
-      ? this.renderEmpty()
-      : this.renderFilled(results);
-  }
+  const renderLoaded = (results: GameCard[]): JSX.Element => {
+    return results.length === 0 ? renderEmpty() : renderFilled(results);
+  };
 
-  renderFilled(results: GameCard[]): JSX.Element {
+  const renderEmpty = () => {
+    return <div>No results</div>;
+  };
+
+  const renderFilled = (results: GameCard[]): JSX.Element => {
     return (
       <>
-        <GamePanel columnCount={computeGrid(this.props.cardCount).columns}>
+        <GamePanel columnCount={computeGrid(cardCount).columns}>
           {results.map(card => (
             <Card
               key={card.cardId}
               gameCard={card}
-              onClick={() => this.handleCardClicked(card.cardId)}
+              onClick={() => handleCardClicked(card.cardId)}
             />
           ))}
         </GamePanel>
       </>
     );
-  }
+  };
 
-  renderEmpty(): JSX.Element {
-    return <div>No results</div>;
-  }
-}
+  const handleCardClicked = (cardId: number) => {
+    if (blocked) {
+      return;
+    }
+
+    const previousCard = cards.find(c => {
+      return c.state === "revealed";
+    });
+
+    if (!previousCard) {
+      setCards(getUpdatedCards(cards, "revealed", [cardId]));
+      return;
+    }
+
+    const card = cards[cardId];
+
+    if (previousCard === card) {
+      return;
+    }
+
+    previousCard.pairId === card.pairId
+      ? matchCards(previousCard.cardId, card.cardId)
+      : hideCards(previousCard.cardId, card.cardId);
+  };
+
+  const matchCards = (...cardIds: number[]) => {
+    const updatedCards = getUpdatedCards(cards, "matched", cardIds);
+    setCards(updatedCards);
+  };
+
+  const hideCards = (...cardIds: number[]) => {
+    setBlocked(true);
+    const updatedCards = getUpdatedCards(cards, "revealed", cardIds);
+    setCards(updatedCards);
+
+    setTimeout(() => {
+      const updatedCards = getUpdatedCards(cards, "hidden", cardIds);
+      setCards(updatedCards);
+      setBlocked(false);
+    }, 1000);
+  };
+
+  return <div>{loading ? renderLoading() : renderLoaded(cards)}</div>;
+};
 
 function getUpdatedCards(
   cards: GameCard[],
   nextState: CardState,
-  ...cardsToUpdate: number[]
+  cardsToUpdate: number[]
 ) {
   return cards.map(c => {
     if (!cardsToUpdate.includes(c.cardId)) {
