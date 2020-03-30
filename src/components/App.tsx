@@ -59,7 +59,9 @@ export const App = () => {
             onChange={handleEzModeChange}
           />
         </label>
-        <button type="submit">Start</button>
+        <button type="submit" disabled={!draftSearch}>
+          Start
+        </button>
       </form>
 
       <Game search={search} cardCount={cardCount} ezMode={ezMode} />
