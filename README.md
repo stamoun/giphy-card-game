@@ -1,3 +1,14 @@
+## Stamoun's Giphy Memory Card Game
+
+This is a project to learn frontend development. It uses React, Styled Components. The result is available [here](www.stamoun.com/giphy-card-game).
+
+## TODO
+
+- Elegant handling of Giphy API rate limit reached exception (Status Code 429)
+- Do not reload the board when EZ Mode is changed
+- CSS Animations
+- Nicer settings form
+
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
 ## Available Scripts
