@@ -8,6 +8,7 @@ This is a project to learn frontend development. It uses React, Styled Component
 - Do not reload the board when EZ Mode is changed
 - CSS Animations
 - Nicer settings form
+- Jest tests
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
