@@ -9,6 +9,7 @@ This is a project to learn frontend development. It uses React, Styled Component
 - CSS Animations
 - Nicer settings form
 - Jest tests
+- Nicer layout (mobile friendlier, github footer, etc.)
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
