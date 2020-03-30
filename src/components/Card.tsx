@@ -1,6 +1,6 @@
-import React from "react";
-import { GameCard } from "../models/game-card";
-import styled from "styled-components";
+import React from 'react';
+import { GameCard } from '../models/game-card';
+import styled from 'styled-components';
 
 interface CardProps {
   gameCard: GameCard;
@@ -28,9 +28,9 @@ const CardUI = styled.button<CardUIButton>`
   }
 
   ${props =>
-    props.cardState === "revealed"
+    props.cardState === 'revealed'
       ? `background-color: bisque;`
-      : props.cardState === "matched"
+      : props.cardState === 'matched'
       ? `background-color: pink;`
       : `background-color: darksalmon;
 
@@ -45,17 +45,21 @@ const CardUI = styled.button<CardUIButton>`
 `;
 
 export const Card = ({ gameCard, onClick }: CardProps) => {
-  const isContentVisible = gameCard.state !== "hidden";
+  const isContentVisible = gameCard.state !== 'hidden';
 
   return (
     <CardUI onClick={onClick} cardState={gameCard.state}>
       {isContentVisible
         ? renderCardContent(gameCard.image.url)
-        : gameCard.pairId}
+        : renderHiddenCardContent(gameCard.ezMode, gameCard.pairId)}
     </CardUI>
   );
 };
 
 function renderCardContent(imgSrc: string) {
   return <img alt="Card" src={imgSrc} />;
+}
+
+function renderHiddenCardContent(ezMode: boolean, pairId: string) {
+  return ezMode ? pairId : '';
 }

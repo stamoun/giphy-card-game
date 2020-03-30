@@ -1,10 +1,10 @@
-import React, { useState, useEffect } from "react";
-import { getImages } from "../logic/giphy-api";
-import { shuffle } from "../logic/shuffler";
-import { GameCard, CardState } from "../models/game-card";
-import { Card } from "./Card";
-import { delay } from "../logic/delay";
-import styled from "styled-components";
+import React, { useState, useEffect } from 'react';
+import { getImages } from '../logic/giphy-api';
+import { shuffle } from '../logic/shuffler';
+import { GameCard, CardState } from '../models/game-card';
+import { Card } from './Card';
+import { delay } from '../logic/delay';
+import styled from 'styled-components';
 
 interface GameDiv {
   columnCount: number;
@@ -13,6 +13,7 @@ interface GameDiv {
 interface GameProps {
   search: string;
   cardCount: number;
+  ezMode: boolean;
 }
 
 const GamePanel = styled.div<GameDiv>`
@@ -23,7 +24,7 @@ const GamePanel = styled.div<GameDiv>`
   justify-content: center;
 `;
 
-export const Game = ({ search, cardCount }: GameProps) => {
+export const Game = ({ search, cardCount, ezMode }: GameProps) => {
   const [loading, setLoading] = useState(true);
   const [blocked, setBlocked] = useState(false);
   const [cards, setCards] = useState<GameCard[]>([]);
@@ -50,8 +51,9 @@ export const Game = ({ search, cardCount }: GameProps) => {
           const result = results[pairIndex];
           const gameCard: GameCard = {
             cardId: cardIndex,
+            ezMode: ezMode,
             pairId: result.pairId,
-            state: "hidden",
+            state: 'hidden',
             image: result.image
           };
           return gameCard;
@@ -60,7 +62,7 @@ export const Game = ({ search, cardCount }: GameProps) => {
         setLoading(false);
         setCards(newCards);
       });
-  }, [search, cardCount]);
+  }, [search, cardCount, ezMode]);
 
   const renderLoading = () => {
     return <div>Loading...</div>;
@@ -96,11 +98,11 @@ export const Game = ({ search, cardCount }: GameProps) => {
     }
 
     const previousCard = cards.find(c => {
-      return c.state === "revealed";
+      return c.state === 'revealed';
     });
 
     if (!previousCard) {
-      setCards(getUpdatedCards(cards, "revealed", [cardId]));
+      setCards(getUpdatedCards(cards, 'revealed', [cardId]));
       return;
     }
 
@@ -116,17 +118,17 @@ export const Game = ({ search, cardCount }: GameProps) => {
   };
 
   const matchCards = (...cardIds: number[]) => {
-    const updatedCards = getUpdatedCards(cards, "matched", cardIds);
+    const updatedCards = getUpdatedCards(cards, 'matched', cardIds);
     setCards(updatedCards);
   };
 
   const hideCards = (...cardIds: number[]) => {
     setBlocked(true);
-    const updatedCards = getUpdatedCards(cards, "revealed", cardIds);
+    const updatedCards = getUpdatedCards(cards, 'revealed', cardIds);
     setCards(updatedCards);
 
     setTimeout(() => {
-      const updatedCards = getUpdatedCards(cards, "hidden", cardIds);
+      const updatedCards = getUpdatedCards(cards, 'hidden', cardIds);
       setCards(updatedCards);
       setBlocked(false);
     }, 1000);
