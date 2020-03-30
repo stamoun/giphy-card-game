@@ -1,6 +1,6 @@
 ## Stamoun's Giphy Memory Card Game
 
-This is a project to learn frontend development. It uses React, Styled Components. The result is available [here](www.stamoun.com/giphy-card-game).
+This is a project to learn frontend development. It uses React, Styled Components. The result is available [here](http://www.stamoun.com/giphy-card-game).
 
 ## TODO
 
