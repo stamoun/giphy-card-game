@@ -1,11 +1,11 @@
-import { getEnv } from "./env-api";
+import { getEnv } from './env-api';
 
 interface GiphyImageResponse {
   data: GiphyData[];
 }
 
 interface GiphyData {
-  type: "gif";
+  type: 'gif';
   id: string;
   images: {
     fixed_height: GiphyImage;
@@ -24,15 +24,15 @@ export async function getImages(
 ): Promise<GiphyImageResponse> {
   const env = await getEnv();
   if (!env.giphy_api_key) {
-    throw new Error("No Giphy api key found.");
+    throw new Error('No Giphy api key found.');
   }
 
   const url = buildGiphyUrl(search, limit, env.giphy_api_key);
 
   const fetchResponse = await fetch(url);
   if (!fetchResponse.ok) {
-    console.error("Error fetching images", fetchResponse);
-    throw new Error("Could not fetch images from Giphy");
+    console.error('Error fetching images', fetchResponse);
+    throw new Error('Could not fetch images from Giphy');
   }
 
   return await fetchResponse.json();
@@ -40,5 +40,7 @@ export async function getImages(
 
 function buildGiphyUrl(search: string, limit: number, apiKey: string): string {
   const encodedSearch = encodeURIComponent(search);
-  return `https://api.giphy.com/v1/gifs/search?q=${encodedSearch}&limit=${limit}&api_key=${apiKey}`;
+  const url = `https://api.giphy.com/v1/gifs/search?q=${encodedSearch}&limit=${limit}&api_key=${apiKey}`;
+
+  return url;
 }
