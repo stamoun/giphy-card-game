@@ -23,11 +23,13 @@ const GamePanel = styled.div<GameDiv>`
   justify-content: center;
 `;
 
+const EZ_MODES = ['off', 'colors', 'id'];
+
 export const Game = ({ search, cardCount }: GameProps) => {
   const [loading, setLoading] = useState(true);
   const [blocked, setBlocked] = useState(false);
   const [cards, setCards] = useState<GameCard[]>([]);
-  const [ezMode, setEzMode] = useState(false);
+  const [ezMode, setEzMode] = useState('off');
 
   useEffect(() => {
     setLoading(true);
@@ -35,10 +37,11 @@ export const Game = ({ search, cardCount }: GameProps) => {
     getImages(search, cardCount / 2)
       .then(response => delay(1000, response))
       .then(response => {
+        let index = 0;
         const results = response.data.map(gd => {
           return {
             image: gd.images.fixed_height,
-            pairId: gd.id
+            pairId: index++
           };
         });
 
@@ -80,18 +83,26 @@ export const Game = ({ search, cardCount }: GameProps) => {
       <>
         <label>
           EZ Mode:
-          <input
-            type="checkbox"
-            checked={ezMode}
-            onChange={handleEzModeChange}
-          />
+          <select value={ezMode} onChange={handleEzModeChange}>
+            {EZ_MODES.map(s => (
+              <option value={s} key={s}>
+                {s}
+              </option>
+            ))}
+          </select>
         </label>
         <GamePanel columnCount={computeGrid(cardCount).columns}>
           {results.map(card => (
             <Card
               key={card.cardId}
               gameCard={card}
-              displayId={ezMode}
+              color={getCardColor(
+                cardCount / 2,
+                card.pairId,
+                card.state,
+                ezMode
+              )}
+              displayId={ezMode === 'id'}
               onClick={() => handleCardClicked(card.cardId)}
             />
           ))}
@@ -100,8 +111,33 @@ export const Game = ({ search, cardCount }: GameProps) => {
     );
   };
 
-  const handleEzModeChange = (e: React.FormEvent<HTMLInputElement>) => {
-    setEzMode(e.currentTarget.checked);
+  const getCardColor = (
+    bracketsCount: number,
+    pairId: number,
+    cardState: string,
+    ezMode: string
+  ) => {
+    const value = Math.floor((256 / bracketsCount) * (pairId + 1));
+    const ezModeColor = `hsl(${value}, 100%, 50%)`;
+
+    console.log(`color: ${ezModeColor}`);
+
+    const color =
+      cardState === 'revealed'
+        ? 'bisque'
+        : cardState === 'matched'
+        ? 'pink'
+        : ezMode === 'colors'
+        ? ezModeColor
+        : 'darksalmon';
+
+    const backgroundColor = `background-color: ${color};`;
+
+    return backgroundColor;
+  };
+
+  const handleEzModeChange = (e: React.FormEvent<HTMLSelectElement>) => {
+    setEzMode(e.currentTarget.value);
   };
 
   const handleCardClicked = (cardId: number) => {

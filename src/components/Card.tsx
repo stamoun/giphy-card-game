@@ -4,12 +4,13 @@ import styled from 'styled-components';
 
 interface CardProps {
   gameCard: GameCard;
+  color: string;
   displayId: boolean;
   onClick: () => void;
 }
 
 interface CardUIButton {
-  cardState: string;
+  backgroundColor: string;
 }
 
 const CardUI = styled.button<CardUIButton>`
@@ -22,34 +23,26 @@ const CardUI = styled.button<CardUIButton>`
   border-radius: 6px;
   align-items: center;
   justify-content: center;
+  ${props => props.backgroundColor}
 
   &:focus {
     outline: none;
     border: 2px solid black;
   }
 
-  ${props =>
-    props.cardState === 'revealed'
-      ? `background-color: bisque;`
-      : props.cardState === 'matched'
-      ? `background-color: pink;`
-      : `background-color: darksalmon;
-
-    &:hover {
-      opacity: 0.8;
-    }
-  `}
-
+  &:hover {
+    opacity: 0.8;
+  }
   > img {
     width: 100%;
   }
 `;
 
-export const Card = ({ gameCard, displayId, onClick }: CardProps) => {
+export const Card = ({ gameCard, color, displayId, onClick }: CardProps) => {
   const isContentVisible = gameCard.state !== 'hidden';
 
   return (
-    <CardUI onClick={onClick} cardState={gameCard.state}>
+    <CardUI onClick={onClick} backgroundColor={color}>
       {isContentVisible
         ? renderCardContent(gameCard.image.url)
         : displayId

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Game } from './Game';
 
-const GAME_SIZES = [12, 16, 20, 30, 36, 42, 56, 64];
+const GAME_SIZES = [12, 16, 20, 30, 36];
 
 export const App = () => {
   const [draftCardCount, setDraftCardCount] = useState(16);
@@ -10,7 +10,6 @@ export const App = () => {
   const [search, setSearch] = useState('Nicolas Cage');
 
   const handleFormSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
     setCardCount(draftCardCount);
     setSearch(draftSearch);
   };
