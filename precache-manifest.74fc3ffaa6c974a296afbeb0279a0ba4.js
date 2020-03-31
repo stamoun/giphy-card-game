@@ -1,10 +1,10 @@
 self.__precacheManifest = (self.__precacheManifest || []).concat([
   {
-    "revision": "19dae62f8ffd79e2cf2f3287170bd45c",
+    "revision": "b35a3f50a6cf4a9ae740804c5ca350a2",
     "url": "/giphy-card-game/index.html"
   },
   {
-    "revision": "a2e4306da6aa37e52de5",
+    "revision": "5a282bff6366c6817d0c",
     "url": "/giphy-card-game/static/css/main.69eda509.chunk.css"
   },
   {
@@ -16,8 +16,8 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "url": "/giphy-card-game/static/js/3.e8673a48.chunk.js"
   },
   {
-    "revision": "a2e4306da6aa37e52de5",
-    "url": "/giphy-card-game/static/js/main.dd4e44e7.chunk.js"
+    "revision": "5a282bff6366c6817d0c",
+    "url": "/giphy-card-game/static/js/main.b321a7c6.chunk.js"
   },
   {
     "revision": "1546197ff4f6bbb98f2f",
