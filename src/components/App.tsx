@@ -8,13 +8,11 @@ export const App = () => {
   const [cardCount, setCardCount] = useState(16);
   const [draftSearch, setDraftSearch] = useState('Nicolas Cage');
   const [search, setSearch] = useState('Nicolas Cage');
-  const [ezMode, setEzMode] = useState(true);
 
   const handleFormSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setCardCount(draftCardCount);
     setSearch(draftSearch);
-    setEzMode(ezMode);
   };
 
   const handleSearchChange = (e: React.FormEvent<HTMLInputElement>) => {
@@ -24,10 +22,6 @@ export const App = () => {
   const handleCardCountChange = (e: React.FormEvent<HTMLSelectElement>) => {
     const next = parseInt(e.currentTarget.value, 10);
     setDraftCardCount(next);
-  };
-
-  const handleEzModeChange = (e: React.FormEvent<HTMLInputElement>) => {
-    setEzMode(e.currentTarget.checked);
   };
 
   return (
@@ -51,20 +45,12 @@ export const App = () => {
             ))}
           </select>
         </label>
-        <label>
-          EZ Mode:
-          <input
-            type="checkbox"
-            checked={ezMode}
-            onChange={handleEzModeChange}
-          />
-        </label>
         <button type="submit" disabled={!draftSearch}>
           Start
         </button>
       </form>
 
-      <Game search={search} cardCount={cardCount} ezMode={ezMode} />
+      <Game search={search} cardCount={cardCount} />
     </div>
   );
 };

@@ -13,7 +13,6 @@ interface GameDiv {
 interface GameProps {
   search: string;
   cardCount: number;
-  ezMode: boolean;
 }
 
 const GamePanel = styled.div<GameDiv>`
@@ -24,10 +23,11 @@ const GamePanel = styled.div<GameDiv>`
   justify-content: center;
 `;
 
-export const Game = ({ search, cardCount, ezMode }: GameProps) => {
+export const Game = ({ search, cardCount }: GameProps) => {
   const [loading, setLoading] = useState(true);
   const [blocked, setBlocked] = useState(false);
   const [cards, setCards] = useState<GameCard[]>([]);
+  const [ezMode, setEzMode] = useState(false);
 
   useEffect(() => {
     setLoading(true);
@@ -51,7 +51,6 @@ export const Game = ({ search, cardCount, ezMode }: GameProps) => {
           const result = results[pairIndex];
           const gameCard: GameCard = {
             cardId: cardIndex,
-            ezMode: ezMode,
             pairId: result.pairId,
             state: 'hidden',
             image: result.image
@@ -62,7 +61,7 @@ export const Game = ({ search, cardCount, ezMode }: GameProps) => {
         setLoading(false);
         setCards(newCards);
       });
-  }, [search, cardCount, ezMode]);
+  }, [search, cardCount]);
 
   const renderLoading = () => {
     return <div>Loading...</div>;
@@ -79,17 +78,30 @@ export const Game = ({ search, cardCount, ezMode }: GameProps) => {
   const renderFilled = (results: GameCard[]): JSX.Element => {
     return (
       <>
+        <label>
+          EZ Mode:
+          <input
+            type="checkbox"
+            checked={ezMode}
+            onChange={handleEzModeChange}
+          />
+        </label>
         <GamePanel columnCount={computeGrid(cardCount).columns}>
           {results.map(card => (
             <Card
               key={card.cardId}
               gameCard={card}
+              displayId={ezMode}
               onClick={() => handleCardClicked(card.cardId)}
             />
           ))}
         </GamePanel>
       </>
     );
+  };
+
+  const handleEzModeChange = (e: React.FormEvent<HTMLInputElement>) => {
+    setEzMode(e.currentTarget.checked);
   };
 
   const handleCardClicked = (cardId: number) => {

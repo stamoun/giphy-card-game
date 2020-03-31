@@ -4,6 +4,7 @@ import styled from 'styled-components';
 
 interface CardProps {
   gameCard: GameCard;
+  displayId: boolean;
   onClick: () => void;
 }
 
@@ -44,22 +45,20 @@ const CardUI = styled.button<CardUIButton>`
   }
 `;
 
-export const Card = ({ gameCard, onClick }: CardProps) => {
+export const Card = ({ gameCard, displayId, onClick }: CardProps) => {
   const isContentVisible = gameCard.state !== 'hidden';
 
   return (
     <CardUI onClick={onClick} cardState={gameCard.state}>
       {isContentVisible
         ? renderCardContent(gameCard.image.url)
-        : renderHiddenCardContent(gameCard.ezMode, gameCard.pairId)}
+        : displayId
+        ? gameCard.pairId
+        : ''}
     </CardUI>
   );
 };
 
 function renderCardContent(imgSrc: string) {
   return <img alt="Card" src={imgSrc} />;
-}
-
-function renderHiddenCardContent(ezMode: boolean, pairId: string) {
-  return ezMode ? pairId : '';
 }
