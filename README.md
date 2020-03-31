@@ -5,11 +5,14 @@ This is a project to learn frontend development. It uses React, Styled Component
 ## TODO
 
 - Elegant handling of Giphy API rate limit reached exception (Status Code 429)
-- Do not reload the board when EZ Mode is changed
+- ~~Do not reload the board when EZ Mode is changed~~
 - CSS Animations
 - Nicer settings form
 - Jest tests
 - Nicer layout (mobile friendlier, github footer, etc.)
+- Images that have height > width should be constrained on height
+- Sounds
+- Win screen
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
