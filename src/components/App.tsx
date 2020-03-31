@@ -10,6 +10,7 @@ export const App = () => {
   const [search, setSearch] = useState('Nicolas Cage');
 
   const handleFormSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
     setCardCount(draftCardCount);
     setSearch(draftSearch);
   };
